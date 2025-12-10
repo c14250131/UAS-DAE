@@ -1,8 +1,8 @@
-# 🚗 **Toyota Corolla Price Analysis – KNIME Workflow**
+#  **Toyota Corolla Price Analysis – KNIME Workflow**
 
 Analisis harga, eksplorasi data, dan klasifikasi harga mobil menggunakan Decision Tree
 
-## 📌 **Deskripsi Proyek**
+##  **Deskripsi Proyek**
 
 Repository/Workflow ini berisi analisis data harga mobil **Toyota Corolla** menggunakan **KNIME Modern UI**. Tujuan proyek:
 
@@ -16,16 +16,16 @@ Workflow disusun modular agar mudah dipahami, cocok untuk pemula KNIME yang ingi
 
 ---
 
-## 📁 **Isi Workflow**
+##  **Isi Workflow**
 
-📦 **Toyota-Corolla-KNIME**
+**Toyota-Corolla-KNIME**
 ├── `workflow.knwf` → workflow KNIME
 ├── `ToyotaCorolla.csv` → dataset
 ├── `README.md` → dokumentasi
 
 ---
 
-# 🧠 **Alur Workflow (Ringkasan)**
+# **Alur Workflow (Ringkasan)**
 
 **CSV Reader**
 → Statistics
@@ -43,9 +43,9 @@ Workflow disusun modular agar mudah dipahami, cocok untuk pemula KNIME yang ingi
 
 ---
 
-# 🥼 **1. Data Preparation**
+# **1. Data Preparation**
 
-### ✔ Node yang digunakan:
+### Node yang digunakan:
 
 ### **1. CSV Reader**
 
@@ -61,6 +61,8 @@ Menghapus kolom yang tidak relevan untuk analisis prediktif:
 Id, Model, Mfg_Month, Color, Gears, Cylinders, Mfr_Guarantee, dsb.
 Fitur penting yang dipertahankan:
 Age_08_04, KM, Fuel_Type, HP, Met_Color, Automatic, CC, Doors, Weight, Price.
+<img width="432" height="364" alt="image" src="https://github.com/user-attachments/assets/cf9ced75-ada8-4c3e-bfc9-0a9e7a4aff9e" />
+
 
 ### **4. Missing Value**
 
@@ -91,40 +93,22 @@ Membuat kolom **Price_binned**:
 
 Kolom inilah yang menjadi **label utama** untuk klasifikasi Decision Tree.
 
-### **7. Row Filter (opsional)**
 
-Menghapus mobil dengan **KM ≥ 250.000** untuk mengurangi outlier ekstrem.
-
-### **8. Normalizer**
-
-Seluruh kolom numerik dinormalisasi, sehingga perbedaan skala tidak memengaruhi model.
-
-### **9. Rule Engine – Price_Class**
-
-Label tambahan berbasis aturan sederhana:
-
-```
-Price > 12000 => "High"
-TRUE => "Low"
-```
-
-Kelas ini alternatif jika diperlukan analisis biner.
-
-### **10. Column Filter (final)**
+### **7. Column Filter (final)**
 
 Menghapus Price asli & Fuel_Type asli.
 Menjaga fitur yang sudah diproses + Price_binned untuk modeling.
 
 ---
 
-# ⚙️ **2. Data Splitting (Train–Test)**
+# **2. Data Splitting (Train–Test)**
 
 Menggunakan **Table Partitioner** (umumnya 70% train – 30% test).
 Dataset training dipakai untuk membangun model Decision Tree, sementara test digunakan untuk evaluasi prediksi.
 
 ---
 
-# 🧩 **3. Modeling – Decision Tree**
+#  **3. Modeling – Decision Tree**
 
 ### **Decision Tree Learner**
 
@@ -143,7 +127,7 @@ yang berisi kelas harga hasil prediksi model.
 
 ---
 
-# 📊 **4. Evaluasi Model**
+#  **4. Evaluasi Model**
 
 Node **Scorer** menghasilkan:
 
@@ -155,20 +139,35 @@ Model umumnya dapat mengenali kelas Low dan High dengan cukup baik, meskipun kel
 
 ---
 
-# 📈 **5. Insight Utama**
+# **5. Insight Utama**
 
 Beberapa temuan dari analisis:
 
-* **Age_08_04 dan KM** adalah dua faktor paling dominan memengaruhi harga.
-* Semakin tua umur mobil, harga turun signifikan.
-* Mobil dengan **KM tinggi** cenderung masuk kategori Low.
-* **Fuel Type Diesel** sering berada di kategori harga lebih tinggi dibanding Petrol.
-* **Weight dan HP** terlihat berpengaruh terhadap pemisahan kelas Medium/High.
-* Sebagian besar mobil berada pada kelas **Low – Medium**, hanya sebagian kecil masuk kategori High.
+Insight dari Scatter plot Hp vs KM
+1. HP tinggi = indikator paling kuat untuk kategori High.
+2. Low & Medium sulit dibedakan hanya dari HP.
+3. KM rendah bisa mendorong mobil ke kelas lebih tinggi meski HP biasa saja.
+4. Medium adalah kelas paling tidak stabil (overlap besar).
+5. HP dan KM tidak punya hubungan langsung → keduanya harus dipakai bersama-sama.
+<img width="1300" height="372" alt="image" src="https://github.com/user-attachments/assets/e56aee8c-cea1-4ff3-953c-c6d966393dc1" />
+
+Insight dari bar chart Occurence count vs  price binned
+1. Distribusi kelas tidak seimbang → ini menjelaskan kenapa model lebih bagus di Medium.
+2. Medium mendominasi dataset → potensi bias di Decision Tree.
+3. High & Low terlalu sedikit → pola sulit dipelajari → skor prediksi kelas ini lebih rendah.
+Secara bisnis, pasar Corolla bekas terpusat di harga Medium.
+<img width="1231" height="369" alt="image" src="https://github.com/user-attachments/assets/3f7c20c6-7f9f-447f-848f-21ae3ec24260" />
+
+Insight dari Box Plot Value vs KM
+1. Low = KM tinggi → mobil yang sudah dipakai berat → harga turun.
+2. Medium = KM sedang dengan variasi stabil → kondisi lebih “normal”.
+3. High = KM rendah → mobil jarang dipakai → harga lebih mahal.
+4. KM punya pengaruh signifikan terhadap kategori harga, tapi bukan satu-satunya faktor.
+<img width="1332" height="387" alt="image" src="https://github.com/user-attachments/assets/fd9accc8-b752-4779-b258-b6ccaecadb77" />
 
 ---
 
-# 🏁 **6. Kesimpulan**
+# **6. Kesimpulan**
 
 Workflow KNIME ini menunjukkan bahwa harga mobil Toyota Corolla dapat dianalisis dengan baik menggunakan alur data preparation → visualisasi → binning → normalisasi → Decision Tree.
 
